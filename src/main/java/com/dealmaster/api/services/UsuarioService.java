@@ -74,4 +74,13 @@ public class UsuarioService {
             )
         );
     }
+
+    public EmpresaDto getEmpresaByEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuário não encontrado!");
+        }
+        Empresa empresa = usuario.getEmpresa();
+        return new EmpresaDto(empresa.getCnpj(), empresa.getNome());
+    }
 }
