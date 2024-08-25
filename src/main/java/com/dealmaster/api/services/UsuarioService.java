@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dealmaster.api.dtos.EmpresaDto;
+import com.dealmaster.api.dtos.UsuarioLoginDto;
 import com.dealmaster.api.dtos.UsuarioRegisterDto;
 import com.dealmaster.api.dtos.UsuarioResponseDto;
 import com.dealmaster.api.models.Empresa;
@@ -41,6 +42,28 @@ public class UsuarioService {
         );
 
         usuarioRepository.save(usuario);
+
+        return new UsuarioResponseDto(
+            usuario.getNome(), 
+            usuario.getEmail(), 
+            usuario.getTipo(),
+            new EmpresaDto(
+                usuario.getEmpresa().getCnpj(), usuario.getEmpresa().getCnpj()
+            )
+        );
+    }
+
+    @Transactional
+    public UsuarioResponseDto loginUsuario(UsuarioLoginDto usuarioLoginDto) {
+        Usuario usuario = usuarioRepository.findByEmail(usuarioLoginDto.email());
+
+        if(usuario == null) {
+            throw new IllegalArgumentException("E-mail informado não existe!");
+        }
+
+        if(usuario.getSenha().equals(usuarioLoginDto.senha())) {
+            throw new IllegalArgumentException("Senha informada está incorreta!");
+        }
 
         return new UsuarioResponseDto(
             usuario.getNome(), 
