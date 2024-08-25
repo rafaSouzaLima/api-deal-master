@@ -58,11 +58,11 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(usuarioLoginDto.email());
 
         if(usuario == null) {
-            throw new IllegalArgumentException("E-mail informado não existe!");
+            throw new IllegalArgumentException("Email informado nao existe");
         }
 
-        if(usuario.getSenha().equals(usuarioLoginDto.senha())) {
-            throw new IllegalArgumentException("Senha informada está incorreta!");
+        if(!usuario.getSenha().equals(usuarioLoginDto.senha())) {
+            throw new IllegalArgumentException("Senha informada esta incorreta");
         }
 
         return new UsuarioResponseDto(
