@@ -1,6 +1,6 @@
 package com.dealmaster.api.models;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,9 +36,9 @@ public class Contrato {
     private String texto;
 
     @Column(nullable = false)
-    private Date dataVencimento;
+    private LocalDate dataVencimento;
 
-    public Contrato(Usuario usuario, Parceiro parceiro, String texto, Date dataVencimento) {
+    public Contrato(Usuario usuario, Parceiro parceiro, String texto, LocalDate dataVencimento) {
         this.usuario = usuario;
         this.parceiro = parceiro;
         this.texto = texto;
