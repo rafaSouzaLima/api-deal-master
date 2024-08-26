@@ -60,6 +60,7 @@ public class UsuarioService implements UserDetailsService {
         return usuarioRepository.findByEmail(username);
     }
 
+    @Transactional
     public EmpresaDto getEmpresaByEmail(String email) {
         Usuario usuario = usuarioRepository.findUsuarioByEmail(email);
         if (usuario == null) {

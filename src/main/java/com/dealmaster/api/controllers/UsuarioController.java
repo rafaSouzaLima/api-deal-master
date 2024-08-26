@@ -1,5 +1,7 @@
 package com.dealmaster.api.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,20 +9,25 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.dealmaster.api.config.TokenService;
-import com.dealmaster.api.dtos.*;
+import com.dealmaster.api.dtos.ContratoRequestDto;
+import com.dealmaster.api.dtos.ContratoResponseDto;
+import com.dealmaster.api.dtos.EmpresaDto;
+import com.dealmaster.api.dtos.UsuarioLoginDto;
 import com.dealmaster.api.dtos.UsuarioLoginResponseDto;
-import com.dealmaster.api.models.Contrato;
+import com.dealmaster.api.dtos.UsuarioRegisterDto;
+import com.dealmaster.api.dtos.UsuarioResponseDto;
 import com.dealmaster.api.models.Usuario;
-import com.dealmaster.api.services.UsuarioService;
 import com.dealmaster.api.services.ContratoService;
-
-import java.util.List;
+import com.dealmaster.api.services.UsuarioService;
 
 @RestController
 @RequestMapping("api/v1")
@@ -67,31 +74,40 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping("/company")
-    public ResponseEntity<EmpresaDto> getCompanyByUserEmail(@RequestBody UsuarioEmailDto usuarioEmailDto) {
+    @GetMapping("/users/company")
+    public ResponseEntity<EmpresaDto> getCompanyByUserEmail(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            EmpresaDto empresa = usuarioService.getEmpresaByEmail(usuarioEmailDto.email());
+            String token = authorizationHeader.replace("Bearer ", "");
+            String email = tokenService.validateToken(token);
+            EmpresaDto empresa = usuarioService.getEmpresaByEmail(email);
+
             return ResponseEntity.ok(empresa);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
 
-    @PostMapping("/contract")
-    public ResponseEntity<List<Contrato>> getContractsByUserEmail(@RequestBody UsuarioEmailDto usuarioEmailDto) {
+    @GetMapping("/users/contract")
+    public ResponseEntity<List<ContratoResponseDto>> getContractsByUserEmail(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            List<Contrato> contratos = contratoService.getContratosByEmail(usuarioEmailDto.email());
+            String token = authorizationHeader.replace("Bearer ", "");
+            String email = tokenService.validateToken(token);
+
+            List<ContratoResponseDto> contratos = contratoService.getContratosByEmail(email);
             return ResponseEntity.ok(contratos);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
 
-    @PostMapping("/contract/add")
-    public ResponseEntity<Contrato> addContract(@RequestBody ContratoRequestDto contratoRequestDto) {
+    @PostMapping("/users/contract/add")
+    public ResponseEntity<Void> addContract(@RequestHeader("Authorization") String authorizationHeader, @RequestBody ContratoRequestDto contratoRequestDto) {
         try {
-            Contrato contrato = contratoService.addContrato(contratoRequestDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(contrato);
+            String token = authorizationHeader.replace("Bearer ", "");
+            String email = tokenService.validateToken(token);
+
+            contratoService.addContrato(email, contratoRequestDto);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
