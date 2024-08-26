@@ -7,32 +7,27 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.dealmaster.api.config.TokenService;
 import com.dealmaster.api.dtos.UsuarioLoginDto;
+import com.dealmaster.api.dtos.UsuarioLoginResponseDto;
 import com.dealmaster.api.dtos.UsuarioRegisterDto;
 import com.dealmaster.api.dtos.UsuarioResponseDto;
-import com.dealmaster.api.services.UsuarioService;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import com.dealmaster.api.config.TokenService;
-import com.dealmaster.api.dtos.UsuarioLoginResponseDto;
 import com.dealmaster.api.models.Usuario;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.dealmaster.api.services.UsuarioService;
 
 @RestController
 @RequestMapping("api/v1")
 public class UsuarioController {
     @Autowired
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private UsuarioService usuarioService;
-
     @Autowired
     private TokenService tokenService;
 
@@ -68,9 +63,6 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("/teste")
-    public String getMethodName() {
-        return "Olá mundo!";
-    }
+    
     
 }

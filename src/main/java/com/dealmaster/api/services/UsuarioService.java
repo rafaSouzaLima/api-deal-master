@@ -1,10 +1,12 @@
 package com.dealmaster.api.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.dealmaster.api.dtos.EmpresaDto;
-import com.dealmaster.api.dtos.UsuarioLoginDto;
 import com.dealmaster.api.dtos.UsuarioRegisterDto;
 import com.dealmaster.api.dtos.UsuarioResponseDto;
 import com.dealmaster.api.models.Empresa;
@@ -15,7 +17,7 @@ import com.dealmaster.api.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
@@ -51,5 +53,10 @@ public class UsuarioService {
                 usuario.getEmpresa().getCnpj(), usuario.getEmpresa().getCnpj()
             )
         );
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return usuarioRepository.findByEmail(username);
     }
 }
