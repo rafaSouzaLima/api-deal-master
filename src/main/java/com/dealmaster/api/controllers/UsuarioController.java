@@ -18,12 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.dealmaster.api.config.TokenService;
-import com.dealmaster.api.dtos.*;
+import com.dealmaster.api.dtos.ContratoRequestDto;
+import com.dealmaster.api.dtos.ContratoResponseDto;
+import com.dealmaster.api.dtos.EmpresaDto;
+import com.dealmaster.api.dtos.UsuarioLoginDto;
+import com.dealmaster.api.dtos.UsuarioLoginResponseDto;
+import com.dealmaster.api.dtos.UsuarioRegisterDto;
+import com.dealmaster.api.dtos.UsuarioResponseDto;
 import com.dealmaster.api.models.Usuario;
 import com.dealmaster.api.services.ContratoService;
 import com.dealmaster.api.services.UsuarioService;
-
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1")

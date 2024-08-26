@@ -69,3 +69,4 @@ public class UsuarioService implements UserDetailsService {
         Empresa empresa = usuario.getEmpresa();
         return new EmpresaDto(empresa.getCnpj(), empresa.getNome());
     }
+}
