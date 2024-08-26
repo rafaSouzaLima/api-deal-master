@@ -59,4 +59,13 @@ public class UsuarioService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return usuarioRepository.findByEmail(username);
     }
+
+    public EmpresaDto getEmpresaByEmail(String email) {
+        Usuario usuario = usuarioRepository.findUsuarioByEmail(email);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuário não encontrado!");
+        }
+        Empresa empresa = usuario.getEmpresa();
+        return new EmpresaDto(empresa.getCnpj(), empresa.getNome());
+    }
 }

@@ -9,17 +9,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.dealmaster.api.config.TokenService;
-import com.dealmaster.api.dtos.UsuarioLoginDto;
+import com.dealmaster.api.dtos.*;
 import com.dealmaster.api.dtos.UsuarioLoginResponseDto;
-import com.dealmaster.api.dtos.UsuarioRegisterDto;
-import com.dealmaster.api.dtos.UsuarioResponseDto;
+import com.dealmaster.api.models.Contrato;
 import com.dealmaster.api.models.Usuario;
 import com.dealmaster.api.services.UsuarioService;
+import com.dealmaster.api.services.ContratoService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1")
@@ -28,6 +29,9 @@ public class UsuarioController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private ContratoService contratoService;
     @Autowired
     private TokenService tokenService;
 
@@ -63,6 +67,33 @@ public class UsuarioController {
         }
     }
 
-    
-    
+    @PostMapping("/company")
+    public ResponseEntity<EmpresaDto> getCompanyByUserEmail(@RequestBody UsuarioEmailDto usuarioEmailDto) {
+        try {
+            EmpresaDto empresa = usuarioService.getEmpresaByEmail(usuarioEmailDto.email());
+            return ResponseEntity.ok(empresa);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @PostMapping("/contract")
+    public ResponseEntity<List<Contrato>> getContractsByUserEmail(@RequestBody UsuarioEmailDto usuarioEmailDto) {
+        try {
+            List<Contrato> contratos = contratoService.getContratosByEmail(usuarioEmailDto.email());
+            return ResponseEntity.ok(contratos);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @PostMapping("/contract/add")
+    public ResponseEntity<Contrato> addContract(@RequestBody ContratoRequestDto contratoRequestDto) {
+        try {
+            Contrato contrato = contratoService.addContrato(contratoRequestDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(contrato);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
 }

@@ -35,4 +35,10 @@ public class Parceiro {
         this.tipo = tipo;
         this.nome = nome;
     }
+
+    public Parceiro(String nome, String tipo, String cpfCnpj) {
+        this.nome = nome;
+        this.tipo = TipoParceiro.valueOf(tipo); // converti tipo de string para enum
+        this.cpfCnpj = cpfCnpj;
+    }
 }
