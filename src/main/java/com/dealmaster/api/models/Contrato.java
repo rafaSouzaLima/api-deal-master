@@ -24,6 +24,9 @@ public class Contrato {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Column(nullable = false, unique = true)
+    private String codigo;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
@@ -38,7 +41,8 @@ public class Contrato {
     @Column(nullable = false)
     private LocalDate dataVencimento;
 
-    public Contrato(Usuario usuario, Parceiro parceiro, String texto, LocalDate dataVencimento) {
+    public Contrato(String codigo, Usuario usuario, Parceiro parceiro, String texto, LocalDate dataVencimento) {
+        this.codigo = codigo;
         this.usuario = usuario;
         this.parceiro = parceiro;
         this.texto = texto;

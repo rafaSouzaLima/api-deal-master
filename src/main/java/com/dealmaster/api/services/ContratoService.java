@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.dealmaster.api.dtos.ContratoRequestDto;
 import com.dealmaster.api.dtos.ContratoResponseDto;
+import com.dealmaster.api.dtos.ContratoUpdateRequestDto;
 import com.dealmaster.api.dtos.EmpresaDto;
 import com.dealmaster.api.dtos.ParceiroDto;
 import com.dealmaster.api.dtos.UsuarioResponseDto;
@@ -45,6 +49,7 @@ public class ContratoService {
         for(var contrato : contratos) {
             contratoResponseDtos.add(
                 new ContratoResponseDto(
+                    contrato.getCodigo(),
                     new UsuarioResponseDto(
                         usuario.getNome(),
                         usuario.getEmail(),
@@ -85,7 +90,20 @@ public class ContratoService {
             parceiroRepository.save(parceiro);
         }
 
+        //Com uma página de tamanho 1 é impedido de ele pegar todos os códigos de uma vez.
+        Pageable pageable = PageRequest.of(0, 1, Sort.by("id").descending());
+        List<String> codigos = contratoRepository.findUltimoCodigo(pageable);
+        String codigo = codigos.isEmpty() ? null : codigos.get(0);
+
+        if(codigo == null || codigo.isEmpty()) codigo = "C000001";
+        else {
+            int num = Integer.parseInt(codigo.substring(1));
+            num++;
+            codigo = "C" + String.format("%06d", num);
+        }
+
         Contrato contrato = new Contrato(
+            codigo,
             usuario,
             parceiro,
             contratoRequestDto.texto(),
@@ -93,5 +111,31 @@ public class ContratoService {
         );
 
         return contratoRepository.save(contrato);
+    }
+
+    @Transactional
+    public void updateContrato(String email, ContratoUpdateRequestDto contratoUpdateRequestDto) {
+        Contrato contrato = contratoRepository.findByCodigo(contratoUpdateRequestDto.codigo());
+        if(contrato == null || !contrato.getUsuario().getEmail().equals(email)) {
+            throw new IllegalArgumentException("Contrato não existe!");
+        }
+
+        Parceiro parceiro = parceiroRepository.findByCpfCnpj(contratoUpdateRequestDto.parceiro().cpfCnpj());
+        if(parceiro == null) {
+            parceiro = new Parceiro(
+                contratoUpdateRequestDto.parceiro().cpfCnpj(),
+                contratoUpdateRequestDto.parceiro().tipo(),
+                contratoUpdateRequestDto.parceiro().nome()
+            );
+        } else {
+            parceiro.setNome(contratoUpdateRequestDto.parceiro().nome());
+        }
+        parceiroRepository.save(parceiro);
+
+        contrato.setParceiro(parceiro);
+        contrato.setTexto(contratoUpdateRequestDto.texto());
+        contrato.setDataVencimento(contratoUpdateRequestDto.dataVencimento());
+        
+        contratoRepository.save(contrato);
     }
 }

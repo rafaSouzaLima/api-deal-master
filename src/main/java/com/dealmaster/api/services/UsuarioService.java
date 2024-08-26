@@ -50,7 +50,7 @@ public class UsuarioService implements UserDetailsService {
             usuario.getEmail(), 
             usuario.getTipo(),
             new EmpresaDto(
-                usuario.getEmpresa().getCnpj(), usuario.getEmpresa().getCnpj()
+                usuario.getEmpresa().getCnpj(), usuario.getEmpresa().getNome()
             )
         );
     }

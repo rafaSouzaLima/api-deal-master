@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.dealmaster.api.config.TokenService;
 import com.dealmaster.api.dtos.ContratoRequestDto;
 import com.dealmaster.api.dtos.ContratoResponseDto;
+import com.dealmaster.api.dtos.ContratoUpdateRequestDto;
 import com.dealmaster.api.dtos.EmpresaDto;
 import com.dealmaster.api.dtos.UsuarioLoginDto;
 import com.dealmaster.api.dtos.UsuarioLoginResponseDto;
@@ -28,6 +30,7 @@ import com.dealmaster.api.dtos.UsuarioResponseDto;
 import com.dealmaster.api.models.Usuario;
 import com.dealmaster.api.services.ContratoService;
 import com.dealmaster.api.services.UsuarioService;
+
 
 @RestController
 @RequestMapping("api/v1")
@@ -107,6 +110,19 @@ public class UsuarioController {
 
             contratoService.addContrato(email, contratoRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    @PutMapping("/users/contract/update")
+    public ResponseEntity<Void> updateContract(@RequestHeader("Authorization") String authorizationHeader, @RequestBody ContratoUpdateRequestDto contratoRequestDto) {
+        try {
+            String token = authorizationHeader.replace("Bearer ", "");
+            String email = tokenService.validateToken(token);
+
+            contratoService.updateContrato(email, contratoRequestDto);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
