@@ -18,16 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.dealmaster.api.config.TokenService;
-import com.dealmaster.api.dtos.ContratoRequestDto;
-import com.dealmaster.api.dtos.ContratoResponseDto;
-import com.dealmaster.api.dtos.EmpresaDto;
-import com.dealmaster.api.dtos.UsuarioLoginDto;
-import com.dealmaster.api.dtos.UsuarioLoginResponseDto;
-import com.dealmaster.api.dtos.UsuarioRegisterDto;
-import com.dealmaster.api.dtos.UsuarioResponseDto;
+import com.dealmaster.api.dtos.*;
 import com.dealmaster.api.models.Usuario;
 import com.dealmaster.api.services.ContratoService;
 import com.dealmaster.api.services.UsuarioService;
+
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1")
@@ -36,7 +32,6 @@ public class UsuarioController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private UsuarioService usuarioService;
-
     @Autowired
     private ContratoService contratoService;
     @Autowired
@@ -80,7 +75,7 @@ public class UsuarioController {
             String token = authorizationHeader.replace("Bearer ", "");
             String email = tokenService.validateToken(token);
             EmpresaDto empresa = usuarioService.getEmpresaByEmail(email);
-
+          
             return ResponseEntity.ok(empresa);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);

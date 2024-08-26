@@ -1,5 +1,6 @@
 package com.dealmaster.api.services;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,6 @@ import com.dealmaster.api.repositories.ParceiroRepository;
 import com.dealmaster.api.repositories.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
-
 @Service
 public class ContratoService {
 
@@ -38,7 +38,6 @@ public class ContratoService {
         if (usuario == null) {
             throw new IllegalArgumentException("Usuário não encontrado!");
         }
-
 
         List<Contrato> contratos = contratoRepository.findByUsuario(usuario);
 
