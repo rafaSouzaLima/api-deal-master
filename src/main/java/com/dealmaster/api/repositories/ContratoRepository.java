@@ -8,6 +8,5 @@ import com.dealmaster.api.models.Contrato;
 import com.dealmaster.api.models.Usuario;
 
 public interface ContratoRepository extends JpaRepository<Contrato, Integer>{
-    Contrato findByDescricao(String descricao);
     List<Contrato> findByUsuario(Usuario usuario);
 }

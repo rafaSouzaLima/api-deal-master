@@ -1,10 +1,12 @@
 package com.dealmaster.api.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.dealmaster.api.dtos.EmpresaDto;
-import com.dealmaster.api.dtos.UsuarioLoginDto;
 import com.dealmaster.api.dtos.UsuarioRegisterDto;
 import com.dealmaster.api.dtos.UsuarioResponseDto;
 import com.dealmaster.api.models.Empresa;
@@ -15,7 +17,7 @@ import com.dealmaster.api.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
@@ -53,34 +55,17 @@ public class UsuarioService {
         );
     }
 
-    @Transactional
-    public UsuarioResponseDto loginUsuario(UsuarioLoginDto usuarioLoginDto) {
-        Usuario usuario = usuarioRepository.findByEmail(usuarioLoginDto.email());
-
-        if(usuario == null) {
-            throw new IllegalArgumentException("E-mail informado não existe!");
-        }
-
-        if(usuario.getSenha().equals(usuarioLoginDto.senha())) {
-            throw new IllegalArgumentException("Senha informada está incorreta!");
-        }
-
-        return new UsuarioResponseDto(
-            usuario.getNome(), 
-            usuario.getEmail(), 
-            usuario.getTipo(),
-            new EmpresaDto(
-                usuario.getEmpresa().getCnpj(), usuario.getEmpresa().getCnpj()
-            )
-        );
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return usuarioRepository.findByEmail(username);
     }
 
+    @Transactional
     public EmpresaDto getEmpresaByEmail(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email);
+        Usuario usuario = usuarioRepository.findUsuarioByEmail(email);
         if (usuario == null) {
             throw new IllegalArgumentException("Usuário não encontrado!");
         }
         Empresa empresa = usuario.getEmpresa();
         return new EmpresaDto(empresa.getCnpj(), empresa.getNome());
     }
-}

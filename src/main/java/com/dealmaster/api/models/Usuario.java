@@ -1,5 +1,12 @@
 package com.dealmaster.api.models;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,7 +26,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @Table(name = "tb_usuarios")
-public class Usuario {
+public class Usuario implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -47,5 +54,23 @@ public class Usuario {
         this.senha = senha;
         this.tipo = tipo;
         this.empresa = empresa;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if(this.tipo == TipoUsuario.GERENTE) 
+            return List.of(new SimpleGrantedAuthority("ROLE_GERENTE"), new SimpleGrantedAuthority("ROLE_FUNCIONARIO"));
+        else
+            return List.of(new SimpleGrantedAuthority("ROLE_FUNCIONARIO"));
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 }
