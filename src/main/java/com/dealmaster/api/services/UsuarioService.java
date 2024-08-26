@@ -52,26 +52,4 @@ public class UsuarioService {
             )
         );
     }
-
-    @Transactional
-    public UsuarioResponseDto loginUsuario(UsuarioLoginDto usuarioLoginDto) {
-        Usuario usuario = usuarioRepository.findByEmail(usuarioLoginDto.email());
-
-        if(usuario == null) {
-            throw new IllegalArgumentException("Email informado nao existe");
-        }
-
-        if(!usuario.getSenha().equals(usuarioLoginDto.senha())) {
-            throw new IllegalArgumentException("Senha informada esta incorreta");
-        }
-
-        return new UsuarioResponseDto(
-            usuario.getNome(), 
-            usuario.getEmail(), 
-            usuario.getTipo(),
-            new EmpresaDto(
-                usuario.getEmpresa().getCnpj(), usuario.getEmpresa().getCnpj()
-            )
-        );
-    }
 }
